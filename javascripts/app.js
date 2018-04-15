@@ -1,6 +1,3 @@
-// Rover Object Goes Here
-// ======================
-
 var rover = {
   direction: "N",
   x: 0,
@@ -10,14 +7,12 @@ var rover = {
 
 var obstacle = {
   x: 2,
-  y: 3,
-  message: 'hola rover! pinchaste'
+  y: 3
 }
 
 const xLimit = 10;
 const yLimit = 10;
 
-// ======================
 function turnLeft(){
   switch(rover.direction) {
     case 'N':
@@ -33,7 +28,7 @@ function turnLeft(){
         rover.direction = 'S';
         break;
   }
-  whereIs();
+  whereIs(rover);
 }
 
 function turnRight(){
@@ -51,59 +46,59 @@ function turnRight(){
         rover.direction = 'N';
         break;
   }
-  whereIs();
+  whereIs(rover);
 }
 
-function moveBack() {
-  logPosition();
-  if (rover.direction === "N" && rover.y < 10) rover.y++;
-  if (rover.direction === "E" && rover.x > -10) rover.x--;
-  if (rover.direction === "S" && rover.y > -10) rover.y--;
-  if (rover.direction === "W" && rover.x < 10) rover.x++;
-  whereIs();
+function moveBack(rover) {
+  logPosition(rover);
+  if (rover.direction === "N" && validatePosition(rover.x, rover.y + 1)) rover.y++; 
+  if (rover.direction === "E" && validatePosition(rover.x - 1, rover.y)) rover.x--;
+  if (rover.direction === "S" && validatePosition(rover.x, rover.y - 1)) rover.y--;
+  if (rover.direction === "W" && validatePosition(rover.x + 1, rover.y)) rover.x++;
+  whereIs(rover);
 }
 
-function moveForward() {
+function moveForward(rover) {
   logPosition();
   if (rover.direction === "N" && rover.y > -10) rover.y--;
   if (rover.direction === "E" && rover.x < 10) rover.x++;
   if (rover.direction === "S" && rover.y < 10) rover.y++;
   if (rover.direction === "W" && rover.x > -10) rover.x--;
-  whereIs();
+  whereIs(rover);
 }
 
-function whereIs() {
+function whereIs(rover) {
   console.log("Now the rover is at " + rover.x + "," + rover.y + " facing " + rover.direction); 
 }
 
-function showLog() {
+function showLog(rover) {
   console.log("The rover has been at:");
   console.log(rover.travelLog);
 }
 
-function logPosition() {
+function logPosition(rover) {
   rover.travelLog.push([rover.x, rover.y]);
 }
 
-function command(command) {
+function command(command, rover) {
   let move = false;
   for (let i = 0; i < command.length; i++) {
     if (command[i] === 'f') {
-      moveForward();
+      moveForward(rover);
       move = true;
     } else if (command[i] === 'b') {
-      moveBack();
+      moveBack(rover);
       move = true;  
     } else if (command[i] === 'l') {
-      turnLeft();
+      turnLeft(rover);
     } else if (command[i] === 'r') {
-      turnRight();   
+      turnRight(rover);   
     } else console.log('Unknown command');
   }
-  if (move) showLog();
+  if (move) showLog(rover);
 }
 
-function validateMove(x, y) {
+function validatePosition(x, y) {
   if (x === obstacle.x && y === obstacle.y) {
     console.log('OBSTACLE ALERT!!!');
     return false;
