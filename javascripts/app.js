@@ -66,16 +66,48 @@ function turnRight(rover){
 }
 
 function moveBack(rover) {
-  logPosition(rover);
-  if (rover.direction === "N" && validatePosition(rover.x, rover.y + 1)) rover.y++; 
-  if (rover.direction === "E" && validatePosition(rover.x - 1, rover.y)) rover.x--;
-  if (rover.direction === "S" && validatePosition(rover.x, rover.y - 1)) rover.y--;
-  if (rover.direction === "W" && validatePosition(rover.x + 1, rover.y)) rover.x++;
-  whereIs(rover);
+  if (rover.direction === "N") {
+    if (validatePosition(rover.x, rover.y - 1)) {
+      logPosition(rover);
+      rover.y--;
+      printMoveBackward(rover, rover.x, rover.y);
+      return true;
+    } else {
+      return false;
+    };
+  }
+  if (rover.direction === "E")
+    if (validatePosition(rover.x - 1, rover.y)) {
+      logPosition(rover);
+      rover.x--;
+      printMoveBackward(rover, rover.x, rover.y);
+      return true;
+    } else {
+      return false; 
+    }
+  if (rover.direction === "S") {
+    if (validatePosition(rover.x, rover.y + 1)) {
+      logPosition(rover);
+      rover.y++;
+      printMoveBackward(rover, rover.x, rover.y);
+      return true;
+    } else {
+      return false;
+    }
+  }   
+  if (rover.direction === "W") {
+    if (validatePosition(rover.x + 1, rover.y)) {
+      logPosition(rover);
+      rover.x++;
+      printMoveBackward(rover, rover.x, rover.y);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
-function moveForward(rover) {
-  
+function moveForward(rover) {  
   if (rover.direction === "N") {
     if (validatePosition(rover.x, rover.y + 1)) {
       logPosition(rover);
@@ -125,27 +157,19 @@ function logPosition(rover) {
   rover.travelLog.push([rover.x, rover.y]);
 }
 
-function move(command) {
-  let move = false;
+function move(command) { 
   for (let i = 0; i < command.length; i++) {
     if (command[i] === 'f') {
       if (!moveForward(activeRover)) {
         break;
-      }      
-      move = true;
+      }
     } else if (command[i] === 'b') {
       moveBack(activeRover);
-      move = true;  
     } else if (command[i] === 'l') {
       turnLeft(activeRover);
     } else if (command[i] === 'r') {
       turnRight(activeRover);   
     } else console.log('Unknown command');
-  }
-  if (move) {
-    whereIs(activeRover);
-  } else {
-    console.log("You loose turn!");
   }
   changeTurn();
 }
@@ -154,7 +178,7 @@ function validatePosition(x, y) {
   //console.log("validatePosition debug:" + x + y);
   if (x === obstacle.x && y === obstacle.y) {
     console.log('You found LIFE on Mars!!!! ENHORABUENA!!!!');
-    return false;
+    exit();
   }  
   if (x > xLimit || y > yLimit || x < -xLimit || y < -yLimit) {
     console.log('OUT OF BOUNDS!!! You lost your turn');
@@ -229,8 +253,12 @@ function printMoveForward(rover, x, y) {
   console.log(rover.name + " moved forward to [" + x + "," + y + "]");
 }
 
+function printMoveBackward(rover, x, y) {
+  console.log(rover.name + " moved backwars to [" + x + "," + y + "]");
+}
+
 function printPosition(rover) {
-  console.log(rover.name + " is at [" + rover.x + "," + activeRover.y + "] facing " + rover.direction);
+  console.log(rover.name + " is at [" + rover.x + "," + rover.y + "] facing " + rover.direction);
 }
 
 function printStatus() {
