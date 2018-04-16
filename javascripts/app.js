@@ -23,23 +23,27 @@ const xLimit = 10;
 const yLimit = 10;
 var activeRover = rover1;
 
+// ---------------------------
+// --------- MOVES------------
+// ---------------------------
+
 function turnLeft(rover){
   switch(rover.direction) {
     case 'N':
         rover.direction = 'W';
-        printTurn(rover, 'W');
+        printTurn(rover);
         break;
     case 'E':
         rover.direction = 'N';
-        printTurn(rover, 'N');
+        printTurn(rover);
         break;
     case 'S':
         rover.direction = 'E';  
-        printTurn(rover, 'E');
+        printTurn(rover);
         break;
     case 'W':
         rover.direction = 'S';
-        printTurn(rover, 'S');
+        printTurn(rover);
         break;
   }
 }
@@ -48,19 +52,19 @@ function turnRight(rover){
   switch(rover.direction) {
     case 'N':
         rover.direction = 'E';
-        printTurn(rover, 'E');
+        printTurn(rover);
         break;
     case 'E':
         rover.direction = 'S';
-        printTurn(rover, 'S');
+        printTurn(rover);
         break;
     case 'S':
         rover.direction = 'W';  
-        printTurn(rover, 'W');
+        printTurn(rover);
         break;
     case 'W':
         rover.direction = 'N';
-        printTurn(rover, 'N');
+        printTurn(rover);
         break;
   }
 }
@@ -76,7 +80,7 @@ function moveBack(rover) {
       return false;
     };
   }
-  if (rover.direction === "E")
+  if (rover.direction === "E") {
     if (validatePosition(rover.x - 1, rover.y)) {
       logPosition(rover);
       rover.x--;
@@ -85,6 +89,7 @@ function moveBack(rover) {
     } else {
       return false; 
     }
+  }
   if (rover.direction === "S") {
     if (validatePosition(rover.x, rover.y + 1)) {
       logPosition(rover);
@@ -116,9 +121,9 @@ function moveForward(rover) {
       return true;
     } else {
       return false;
-    };
+    }
   }
-  if (rover.direction === "E")
+  if (rover.direction === "E") {
     if (validatePosition(rover.x + 1, rover.y)) {
       logPosition(rover);
       rover.x++;
@@ -127,6 +132,7 @@ function moveForward(rover) {
     } else {
       return false; 
     }
+  }
   if (rover.direction === "S") {
     if (validatePosition(rover.x, rover.y - 1)) {
       logPosition(rover);
@@ -136,7 +142,7 @@ function moveForward(rover) {
     } else {
       return false;
     }
-  }   
+  }
   if (rover.direction === "W") {
     if (validatePosition(rover.x - 1, rover.y)) {
       logPosition(rover);
@@ -149,35 +155,19 @@ function moveForward(rover) {
   } 
 }
 
-function whereIs(rover) {
-  console.log("Now the rover '" + activeRover.name + "' is at [" + rover.x + "," + rover.y + "] facing " + rover.direction); 
-}
+// ----------------------------------
+// -------- OTHER FUNCTIONS ---------
+// ----------------------------------
 
 function logPosition(rover) {
   rover.travelLog.push([rover.x, rover.y]);
-}
-
-function move(command) { 
-  for (let i = 0; i < command.length; i++) {
-    if (command[i] === 'f') {
-      if (!moveForward(activeRover)) {
-        break;
-      }
-    } else if (command[i] === 'b') {
-      moveBack(activeRover);
-    } else if (command[i] === 'l') {
-      turnLeft(activeRover);
-    } else if (command[i] === 'r') {
-      turnRight(activeRover);   
-    } else console.log('Unknown command');
-  }
-  changeTurn();
 }
 
 function validatePosition(x, y) {
   //console.log("validatePosition debug:" + x + y);
   if (x === obstacle.x && y === obstacle.y) {
     console.log('You found LIFE on Mars!!!! ENHORABUENA!!!!');
+    printLife();
     exit();
   }  
   if (x > xLimit || y > yLimit || x < -xLimit || y < -yLimit) {
@@ -191,35 +181,41 @@ function validatePosition(x, y) {
   return true;
 }
 
-function start() {
-  console.log("Welcome! To Mars Rover Explorer v0.2");
-  console.log("Try to find LIFE on Mars before your opponent");
-  console.log("There are 2 mars-rovers: " + rover1.name + " and " + rover2.name);
-  console.log("Type help() for... help");
-  printStatus();
+function changeTurn() {
+  if (activeRover === rover2) {
+    activeRover = rover1;    
+  } else {
+    activeRover = rover2;
+  }
+  console.log("Ok. Now it's rover " + activeRover.name + "'s turn");
   printPosition(activeRover);
 }
 
-function help() {
-  console.log("Type info() to get info of the game");
-  console.log("Type move('command') to program your rover's move");
-  console.log("  - 'f' to move forward");
-  console.log("  - 'b' to move back");
-  console.log("  - 'r' to turn right");
-  console.log("  - 'l' to turn left");
-  console.log("Example: move('fflb')");
-  console.log("Type pass() to pass turn");
-  console.log("Type log() to show your rover's travel log");
-}
-function changeTurn() {
-  if (activeRover === rover2) {
-    activeRover = rover1;
-    console.log("Ok. Now it's rover " + activeRover.name + "'s turn");
-  } else {
-    activeRover = rover2;
-    console.log("Ok. Now it's rover " + activeRover.name + "'s turn");
+// ------------------------------------
+// ------------- COMMANDS -------------
+// ------------------------------------
+
+function move(command) { 
+  for (let i = 0; i < command.length; i++) {
+    if (command[i] === 'f') {
+      if (!moveForward(activeRover)) {
+        break;
+      }
+    } else if (command[i] === 'b') {
+      if (!moveBack(activeRover)) {
+        break;
+      }
+    } else if (command[i] === 'l') {
+      turnLeft(activeRover);
+    } else if (command[i] === 'r') {
+      turnRight(activeRover);   
+    } else console.log('Unknown command');
   }
-  printPosition(activeRover);
+  changeTurn();
+}
+
+function help() {
+  printHelp();
 }
 
 function info() {
@@ -236,12 +232,36 @@ function log() {
   printLog(activeRover);
 }
 
+// -----------------------------
+// --------- PRINTS ------------
+// -----------------------------
+
+function start() {
+  console.log("Welcome! To Mars Rover Explorer");
+  console.log("Try to find LIFE on Mars before your opponent");
+  console.log("There are 2 mars-rovers: " + rover1.name + " and " + rover2.name);
+  info();
+  console.log("Type 'help()' for... help");  
+}
+
+function printHelp() {
+  console.log("Type 'move('command')' to program your rover's move");
+  console.log("  'f' to move forward");
+  console.log("  'b' to move back");
+  console.log("  'r' to turn right");
+  console.log("  'l' to turn left");
+  console.log("Example: move('fflf')  -> It would move forward, move forward, turn left and move forward");
+  console.log("Type 'info()' to get info of the game status");
+  console.log("Type 'pass()' to pass your turn");
+  console.log("Type 'log()' to show your rover's travel log");
+}
+
 function printInfo(rover) {
   console.log(rover.name + "'s rover is at [" + rover.x + "," + activeRover.y + "] facing " + rover.direction);
 }
 
-function printTurn(rover, side) {
-  console.log(rover.name + " turned " + side);
+function printTurn(rover) {
+  console.log(rover.name + " turned " + rover.direction);
 }
 
 function printLog(rover) {
@@ -263,6 +283,18 @@ function printPosition(rover) {
 
 function printStatus() {
   console.log("It's " + activeRover.name + "'s turn.");
+}
+
+function printLife() {
+  console.log(`%c 
+________________________________________
+< mooooooooooooooooooooooooooooooooooooo >
+ ----------------------------------------
+        \\   ^__^
+         \\  (oo)\\_______
+            (__)\\       )\\/\\
+                ||----w |
+                ||     ||`, "font-family:monospace")
 }
 
 start();
